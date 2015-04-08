@@ -8,6 +8,7 @@
 namespace units {
 
 template<typename... DimExps> class unit;
+template<typename R, typename U> class unit_multiple;
 
 namespace unit_detail {
 
@@ -188,11 +189,41 @@ class unit {
     using self = unit<DimExps...>;
 
 public:
+    static constexpr size_t dims() { return sizeof...(DimExps); }
+
     template<typename... OtherDims>
     auto operator* (const unit<OtherDims...>& other) const {
         using other_t = unit<OtherDims...>;
-        using result_t = unit_detail::unit_multiply<self, other_t>;
-        return result_t{};
+        return unit_detail::unit_multiply<self, other_t>{};
+    }
+
+    template<typename R, typename U>
+    auto operator* (const unit_multiple<R, U>&) const {
+        using result_t = unit_detail::unit_multiply<self, U>;
+        return unit_multiple<R, result_t>{};
+    }
+
+    template<intmax_t N, intmax_t D>
+    auto operator* (const std::ratio<N, D>&) const {
+        return unit_multiple<std::ratio<N, D>, self>{};
+    }
+
+    template<typename... OtherDims>
+    auto operator/ (const unit<OtherDims...>& other) const {
+        using inverse_t = typename decltype(other.invert())::self;
+        return unit_detail::unit_multiply<self, inverse_t>{};
+    }
+
+    template<typename R, typename U>
+    auto operator/ (const unit_multiple<R, U>&) const {
+        using result_ratio_t = std::ratio_divide<std::ratio<1>, R>;
+        using result_unit_t = unit_detail::unit_multiply<self, decltype(U{}.invert())>;
+        return unit_multiple<result_ratio_t, result_unit_t>{};
+    }
+
+    template<intmax_t N, intmax_t D>
+    auto operator/ (const std::ratio<N, D>&) const {
+        return unit_multiple<std::ratio<D, N>, self>{};
     }
 
     template<int power>
@@ -201,21 +232,13 @@ public:
         return result_t{};
     }
 
-    template<typename... OtherDims>
-    auto operator/ (const unit<OtherDims...>& other) const {
-        using inverse_t = typename decltype(other.invert())::self;
-        using result_t = unit_detail::unit_multiply<self, inverse_t>;
+    auto invert() const {
+        using result_t = typename unit_detail::unit_exp_impl<self, -1>::type;
         return result_t{};
     }
 
     template<typename... D>
     friend class unit;
-
-private:
-    auto invert() const {
-        using result_t = typename unit_detail::unit_exp_impl<self, -1>::type;
-        return result_t{};
-    }
 };
 
 template<typename Ratio, typename Unit>
@@ -241,6 +264,11 @@ struct unit_multiple {
         return unit_multiple<ResultRatio, ResultUnit>{};
     }
 
+    template<typename... D>
+    auto operator* (const unit<D...>& u) const {
+        return u * (*this);
+    }
+
     template<intmax_t N, intmax_t D>
     auto operator/ (const std::ratio<N, D>&) const {
         using ResultRatio = std::ratio_divide<Ratio, std::ratio<N, D>>;
@@ -253,12 +281,17 @@ struct unit_multiple {
         using ResultUnit = decltype(Unit{} / U{});
         return unit_multiple<ResultRatio, ResultUnit>{};
     }
+
+    template<typename... D>
+    auto operator/ (const unit<D...>& u) const {
+        return u.invert() * (*this);
+    }
+
 };
 
 template<intmax_t N, intmax_t D, typename... Dims>
-unit_multiple<std::ratio<N, D>, unit<Dims...>>
-operator* (const std::ratio<N, D>&, const unit<Dims...>&) {
-    return {};
+auto operator* (const std::ratio<N, D>& lhs, const unit<Dims...>& rhs) {
+    return rhs * lhs;
 }
 
 template<intmax_t N, intmax_t D, typename RRatio, typename Unit>
@@ -266,19 +299,26 @@ auto operator* (const std::ratio<N, D>& lhs, const unit_multiple<RRatio, Unit>& 
     return rhs * lhs;
 }
 
-std::ostream& operator<< (std::ostream& os, const unit<>&) {
-    return os;
+template<intmax_t N, intmax_t D, typename... Dims>
+auto operator/ (const std::ratio<N, D>& lhs, const unit<Dims...>& rhs) {
+    return std::ratio<D, N>{} * lhs;
+}
+
+template<intmax_t N, intmax_t D, typename RRatio, typename Unit>
+auto operator/ (const std::ratio<N, D>& lhs, const unit_multiple<RRatio, Unit>& rhs) {
+    return std::ratio<D, N>{} * lhs;
 }
 
 template<typename... Dims>
 std::ostream& operator<< (std::ostream& os, const unit<Dims...>&) {
     using list = meta::type_list<Dims...>;
-    using num_dims = meta::filter<unit_detail::is_positive_exp, list>;
-    using denom_dims = meta::filter<unit_detail::is_negative_exp, list>;
-
-    if (num_dims::size() == 0 and denom_dims::size() == 0) {
+    // return os << "<" << sizeof...(Dims) << "> ";
+    if (sizeof...(Dims) == 0) {
         return os << "[scalar]";
     }
+
+    using num_dims = meta::filter<unit_detail::is_positive_exp, list>;
+    using denom_dims = meta::filter<unit_detail::is_negative_exp, list>;
 
     if (num_dims::size() == 0) {
         os << "1";
@@ -300,6 +340,11 @@ std::ostream& operator<< (std::ostream& os, const unit<Dims...>&) {
         unit_detail::unit_printer<denom_dims>::print(os, true, true);
     }
     return os;
+}
+
+template<typename R, typename U>
+std::ostream& operator<< (std::ostream& os, const unit_multiple<R, U>&) {
+    return os << R::num << "/" << R::den << " " << U{};
 }
 
 #define DEFINE_DIMENSION(name, base)                                           \

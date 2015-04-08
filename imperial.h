@@ -1,5 +1,5 @@
-#ifndef UNITS_METRIC_H
-#define UNITS_METRIC_H
+#ifndef UNITS_IMPERIAL_H
+#define UNITS_IMPERIAL_H
 
 #include "metric.h"
 

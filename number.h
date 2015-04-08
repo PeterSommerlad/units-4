@@ -1,3 +1,6 @@
+#ifndef UNITS_NUMBER_H
+#define UNITS_NUMBER_H
+
 #include "unit.h"
 
 namespace units {
@@ -37,8 +40,12 @@ public:
         return M{value_};
     }
 
+    unit_number<N, U> operator+ () const {
+        return *this;
+    }
+
     unit_number<N, U> operator- () const {
-        return make_unit_number<N, U>(-value_);
+        return make_unit_number<U>(-value_);
     }
 
     template<typename M>
@@ -47,7 +54,7 @@ public:
     }
 
     template<typename M>
-    unit_number<N, U>& operator+ (const unit_number<M, U>& number) {
+    unit_number<N, U>& operator+= (const unit_number<M, U>& number) {
         value_ += number.value_;
         return *this;
     }
@@ -57,22 +64,76 @@ public:
         return make_unit_number<U>(value_ - number.value_);
     }
 
+    template<typename M>
+    unit_number<N, U>& operator-= (const unit_number<M, U>& number) {
+        value_ -= number.value_;
+        return *this;
+    }
+
     template<typename M, typename V>
     auto operator* (const unit_number<M, V>& number) const {
-        using R = decltype(U{} * V{});
-        return make_unit_number<R>(value_ * number.value_);
+        using W = decltype(U{} * V{});
+        return make_unit_number<W>(value_ * number.value_);
+    }
+
+    template<typename R, typename V>
+    auto operator* (const unit_multiple<R, V>& u) const {
+        using W = decltype(U{} * V{});
+        return make_unit_number<W>(value_ * (N{R::num} / N{R::den}));
     }
 
     template<typename... D>
     auto operator* (const unit<D...>& u) const {
-        using R = decltype(U{} * unit<D...>{});
-        return make_unit_number<R>(value_);
+        using W = decltype(U{} * unit<D...>{});
+        return make_unit_number<W>(value_);
     }
 
     template<typename M, typename V>
     auto operator/ (const unit_number<M, V>& number) const {
-        using R = decltype(U{} / V{});
-        return make_unit_number<R>(value_ * number.value_);
+        using W = decltype(U{} / V{});
+        return make_unit_number<W>(value_ / number.value_);
+    }
+
+    template<typename R, typename V>
+    auto operator/ (const unit_multiple<R, V>& u) const {
+        using W = decltype(U{} / V{});
+        return make_unit_number<W>(value_ * (N{R::den} / N{R::num}));
+    }
+
+    template<typename... D>
+    auto operator/ (const unit<D...>& u) const {
+        using W = decltype(U{} / unit<D...>{});
+        return make_unit_number<W>(value_);
+    }
+
+    template<typename M>
+    bool operator< (const unit_number<M, U>& number) const {
+        return value_ < number.value_;
+    }
+
+    template<typename M>
+    bool operator<= (const unit_number<M, U>& number) const {
+        return value_ <= number.value_;
+    }
+
+    template<typename M>
+    bool operator> (const unit_number<M, U>& number) const {
+        return value_ > number.value_;
+    }
+
+    template<typename M>
+    bool operator>= (const unit_number<M, U>& number) const {
+        return value_ >= number.value_;
+    }
+
+    template<typename M>
+    bool operator== (const unit_number<M, U>& number) const {
+        return value_ == number.value_;
+    }
+
+    template<typename M>
+    bool operator!= (const unit_number<M, U>& number) const {
+        return value_ == number.value_;
     }
 
     N value() const {
@@ -88,45 +149,46 @@ private:
 };
 
 template<typename N, typename... D>
-unit_number<N, unit<D...>> operator* (const N& n, const unit<D...>& u) {
+auto operator* (const N& n, const unit<D...>& u) {
     return make_unit_number<unit<D...>>(n);
 }
 
 template<typename N, typename R, typename U>
-unit_number<N, U> operator* (const N& n, const unit_multiple<R, U>&) {
+auto operator* (const N& n, const unit_multiple<R, U>&) {
     return make_unit_number<U>(n * (N{R::num} / N{R::den}));
 }
+
 
 template<typename N, typename U>
 std::ostream& operator<< (std::ostream& os, const unit_number<N, U>& num) {
     return os << num.value() << " " << U{};
 }
 
-template<typename U> using u_float       = unit_number<float, U>;
-template<typename U> using u_double      = unit_number<double, U>;
-template<typename U> using u_long_double = unit_number<long double, U>;
+template<typename U> using ufloat       = unit_number<float, U>;
+template<typename U> using udouble      = unit_number<double, U>;
+template<typename U> using ulong_double = unit_number<long double, U>;
 
-template<typename U> using scalar_float       = u_float<Scalar>;
-template<typename U> using scalar_double      = u_double<Scalar>;
-template<typename U> using scalar_long_double = u_long_double<Scalar>;
+template<typename U> using scalar_float       = ufloat<Scalar>;
+template<typename U> using scalar_double      = udouble<Scalar>;
+template<typename U> using scalar_long_double = ulong_double<Scalar>;
 
-template<typename U> using u_short      = unit_number<short, U>;
-template<typename U> using u_ushort     = unit_number<unsigned short, U>;
-template<typename U> using u_int        = unit_number<int, U>;
-template<typename U> using u_uint       = unit_number<unsigned int, U>;
-template<typename U> using u_long       = unit_number<long, U>;
-template<typename U> using u_ulong      = unit_number<unsigned long, U>;
-template<typename U> using u_long_long  = unit_number<long long, U>;
-template<typename U> using u_ulong_long = unit_number<unsigned long long, U>;
+template<typename U> using ushort      = unit_number<short, U>;
+template<typename U> using uushort     = unit_number<unsigned short, U>;
+template<typename U> using uint        = unit_number<int, U>;
+template<typename U> using uuint       = unit_number<unsigned int, U>;
+template<typename U> using ulong       = unit_number<long, U>;
+template<typename U> using uulong      = unit_number<unsigned long, U>;
+template<typename U> using ulong_long  = unit_number<long long, U>;
+template<typename U> using uulong_long = unit_number<unsigned long long, U>;
 
-template<typename U> using scalar_short      = u_short<Scalar>;
-template<typename U> using scalar_ushort     = u_ushort<Scalar>;
-template<typename U> using scalar_int        = u_int<Scalar>;
-template<typename U> using scalar_uint       = u_uint<Scalar>;
-template<typename U> using scalar_long       = u_long<Scalar>;
-template<typename U> using scalar_ulong      = u_ulong<Scalar>;
-template<typename U> using scalar_long_long  = u_long_long<Scalar>;
-template<typename U> using scalar_ulong_long = u_ulong_long<Scalar>;
+template<typename U> using scalar_short      = ushort<Scalar>;
+template<typename U> using scalar_ushort     = uushort<Scalar>;
+template<typename U> using scalar_int        = uint<Scalar>;
+template<typename U> using scalar_uint       = uuint<Scalar>;
+template<typename U> using scalar_long       = ulong<Scalar>;
+template<typename U> using scalar_ulong      = uulong<Scalar>;
+template<typename U> using scalar_long_long  = ulong_long<Scalar>;
+template<typename U> using scalar_ulong_long = uulong_long<Scalar>;
 
 namespace number_detail {
 
@@ -150,7 +212,8 @@ namespace number_detail {
 } /* namespace number_detail */
 
 template<typename T>
-using unit_type = typename ::units::number_detail::unit_type_impl<T>::type;
+using unit_type = typename ::units::number_detail::unit_type_impl<typename std::remove_cv<T>::type>::type;
 
 } /* namespace units */
 
+#endif

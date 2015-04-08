@@ -1,7 +1,8 @@
 #ifndef UNITS_METRIC_H
 #define UNITS_METRIC_H
 
-#include "unit.h"
+#include "number.h"
+#include "general.h"
 
 namespace units {
 namespace metric {
@@ -13,24 +14,24 @@ namespace detail {
 #define UNIT_TYPE(x) unit_type<decltype(x)>
 
 #define SI_SMALLER_PREFIXES(base)                                              \
-    auto atto##base  = std::atto{} * base;                                     \
-    auto femto##base = std::femto{} * base;                                    \
-    auto pico##base  = std::pico{} * base;                                     \
-    auto nano##base  = std::nano{} * base;                                     \
-    auto micro##base = std::micro{} * base;                                    \
-    auto milli##base = std::milli{} * base;                                    \
-    auto centi##base = std::centi{} * base;                                    \
-    auto deci##base  = std::deci{} * base;
+    const auto atto##base  = std::atto{} * base;                                     \
+    const auto femto##base = std::femto{} * base;                                    \
+    const auto pico##base  = std::pico{} * base;                                     \
+    const auto nano##base  = std::nano{} * base;                                     \
+    const auto micro##base = std::micro{} * base;                                    \
+    const auto milli##base = std::milli{} * base;                                    \
+    const auto centi##base = std::centi{} * base;                                    \
+    const auto deci##base  = std::deci{} * base;
 
 #define SI_LARGER_PREFIXES(base)                                               \
-    auto deca##base  = std::deca{} * base;                                     \
-    auto hecto##base = std::hecto{} * base;                                    \
-    auto kilo##base  = std::kilo{} * base;                                     \
-    auto mega##base  = std::mega{} * base;                                     \
-    auto giga##base  = std::giga{} * base;                                     \
-    auto tera##base  = std::tera{} * base;                                     \
-    auto peta##base  = std::peta{} * base;                                     \
-    auto exa##base   = std::exa{} * base;
+    const auto deca##base  = std::deca{} * base;                                     \
+    const auto hecto##base = std::hecto{} * base;                                    \
+    const auto kilo##base  = std::kilo{} * base;                                     \
+    const auto mega##base  = std::mega{} * base;                                     \
+    const auto giga##base  = std::giga{} * base;                                     \
+    const auto tera##base  = std::tera{} * base;                                     \
+    const auto peta##base  = std::peta{} * base;                                     \
+    const auto exa##base   = std::exa{} * base;
 
 #define SI_ALL_PREFIXES(base)                                                  \
     SI_SMALLER_PREFIXES(base)                                                  \
@@ -43,37 +44,27 @@ namespace detail {
 DEFINE_DIMENSION(Distance, meter);
 SI_ALL_PREFIXES(meter);
 
-// Time
-
-DEFINE_DIMENSION(Time, second);
-SI_SMALLER_PREFIXES(second);
-auto minute = std::ratio<60, 1>{} * second;
-auto hour   = std::ratio<60, 1>{} * minute;
-auto day    = std::ratio<24, 1>{} * hour;
-auto week   = std::ratio<7, 1>{} * day;
-auto year   = std::ratio<365, 1>{} * day;
-
 // Mass
 
 DEFINE_DIMENSION(Mass, kilogram);
-auto gram = std::milli{} * kilogram;
+const auto gram = std::milli{} * kilogram;
 
-auto femtogram = std::femto{} * gram;
-auto picogram  = std::pico{} * gram;
-auto nanogram  = std::nano{} * gram;
-auto microgram = std::micro{} * gram;
-auto milligram = std::milli{} * gram;
-auto centigram = std::centi{} * gram;
-auto decigram  = std::deci{} * gram;
+const auto femtogram = std::femto{} * gram;
+const auto picogram  = std::pico{} * gram;
+const auto nanogram  = std::nano{} * gram;
+const auto microgram = std::micro{} * gram;
+const auto milligram = std::milli{} * gram;
+const auto centigram = std::centi{} * gram;
+const auto decigram  = std::deci{} * gram;
 
-auto decagram  = std::deca{} * gram;
-auto hectogram = std::hecto{} * gram;
-auto megagram  = std::mega{} * gram;
-auto gigagram  = std::giga{} * gram;
-auto teragram  = std::tera{} * gram;
-auto petagram  = std::peta{} * gram;
-auto exagram   = std::exa{} * gram;
-auto tonne     = megagram;
+const auto decagram  = std::deca{} * gram;
+const auto hectogram = std::hecto{} * gram;
+const auto megagram  = std::mega{} * gram;
+const auto gigagram  = std::giga{} * gram;
+const auto teragram  = std::tera{} * gram;
+const auto petagram  = std::peta{} * gram;
+const auto exagram   = std::exa{} * gram;
+const auto tonne     = megagram;
 
 // Temperature
 
@@ -94,127 +85,144 @@ DEFINE_DIMENSION(Substance, mole);
 // Angle
 
 DEFINE_DIMENSION(Angle, radian);
-auto degree =  detail::pi{} * (std::ratio<1, 180>{} * radian);
+const auto degree =  detail::pi{} * (std::ratio<1, 180>{} * radian);
 
 //////////////////////////////// DERIVED UNITS /////////////////////////////////
 
 // Area
 
-auto square_meter = meter * meter;
+const auto square_meter = meter * meter;
 using Area = UNIT_TYPE(square_meter);
 
 // Volume
 
-auto cubic_meter = meter * meter * meter;
+const auto cubic_meter = meter * meter * meter;
 using Volume = UNIT_TYPE(cubic_meter);
-auto liter = std::milli{} * cubic_meter;
+const auto liter = std::milli{} * cubic_meter;
 
-auto femtoliter = std::femto{} * liter;
-auto picoliter  = std::pico{} * liter;
-auto nanoliter  = std::nano{} * liter;
-auto microliter = std::micro{} * liter;
-auto milliliter = std::milli{} * liter;
-auto centiliter = std::centi{} * liter;
-auto deciliter  = std::deci{} * liter;
+const auto femtoliter = std::femto{} * liter;
+const auto picoliter  = std::pico{} * liter;
+const auto nanoliter  = std::nano{} * liter;
+const auto microliter = std::micro{} * liter;
+const auto milliliter = std::milli{} * liter;
+const auto centiliter = std::centi{} * liter;
+const auto deciliter  = std::deci{} * liter;
 
 SI_LARGER_PREFIXES(liter);
 
 // Velocity
 
-auto mps = meter / second;
+const auto mps = meter / second;
 using Velocity = UNIT_TYPE(mps);
 
 // Acceleration
 
-auto mps2 = mps / second;
+const auto mps2 = mps / second;
 using Acceleration = UNIT_TYPE(mps2);
+const auto kph = kilometer / hour;
+const auto gravity = 9.80665 * mps2;
 
 // Frequency
 
-auto hertz = second.exp<-1>();
+const auto hertz = second.exp<-1>();
 using Frequency = UNIT_TYPE(hertz);
 SI_ALL_PREFIXES(hertz);
 
 // Force
 
-auto newton = kilogram * meter / (second * second);
+const auto newton = kilogram * meter / (second * second);
 using Force = UNIT_TYPE(newton);
 SI_ALL_PREFIXES(newton);
 
 // Pressure
 
-auto pascal = newton / (meter * meter);
+const auto pascal = newton / (meter * meter);
 using Pressure = UNIT_TYPE(pascal);
+SI_ALL_PREFIXES(pascal);
 
 // Energy
 
-auto joule = newton * meter;
+const auto joule = newton * meter;
 using Energy = UNIT_TYPE(joule);
+SI_ALL_PREFIXES(joule);
 
 // Power
 
-auto watt = joule / second;
+const auto watt = joule / second;
 using Power = UNIT_TYPE(watt);
+SI_ALL_PREFIXES(watt);
 
 // Electric charge
 
-auto coloumb = ampere * second;
+const auto coloumb = ampere * second;
 using ElectricCharge = UNIT_TYPE(coloumb);
+SI_ALL_PREFIXES(coloumb);
 
 // Voltage
 
-auto volt = watt / ampere;
+const auto volt = watt / ampere;
 using Voltage = UNIT_TYPE(volt);
+SI_ALL_PREFIXES(volt);
 
 // Electric capacitance
 
-auto farad = coloumb / volt;
+const auto farad = coloumb / volt;
 using ElectricCapacitance = UNIT_TYPE(farad);
+SI_ALL_PREFIXES(farad);
 
 // Electric resistance
 
-auto ohm = volt / ampere;
+const auto ohm = volt / ampere;
 using ElectricResistance = UNIT_TYPE(ohm);
+SI_ALL_PREFIXES(ohm);
 
 // Electrical conductance
 
-auto siemens = ampere / volt;
+const auto siemens = ampere / volt;
 using ElectricalConductance = UNIT_TYPE(siemens);
+SI_ALL_PREFIXES(siemens);
 
 // Magnetic flux
 
-auto weber = volt * second;
+const auto weber = volt * second;
 using MagneticFlux = UNIT_TYPE(weber);
+SI_ALL_PREFIXES(weber);
 
 // Magnetic field strength
 
-auto tesla = weber / meter.exp<2>();
+const auto tesla = weber / meter.exp<2>();
 using MagneticField = UNIT_TYPE(tesla);
+SI_ALL_PREFIXES(tesla);
 
 // Inductance
 
-auto henry = weber / ampere;
+const auto henry = weber / ampere;
 using Inductance = UNIT_TYPE(henry);
+SI_ALL_PREFIXES(henry);
 
 // Radioactivity
 
-auto becquerel = hertz;
+const auto becquerel = hertz;
 using Radioactivity = UNIT_TYPE(becquerel);
+SI_ALL_PREFIXES(becquerel);
 
 // Absorbed dose (of ionizing radiation)
 
-auto gray = joule / kilogram;
+const auto gray = joule / kilogram;
 using AbsorbedDose = UNIT_TYPE(gray);
+SI_ALL_PREFIXES(gray);
 
 // Equivalent dose (of ionizing radiation) J/kg    m2⋅s−2
 
-auto sievert = joule / kilogram;
+const auto sievert = joule / kilogram;
 using EquivalentDos = UNIT_TYPE(sievert);
+SI_ALL_PREFIXES(sievert);
 
 // Catalytic activity
 
-auto katal = mole / second;
+const auto katal = mole / second;
 using CatalyticActivity = UNIT_TYPE(katal);
+SI_ALL_PREFIXES(katal);
 
 } /* namespace metric */
 } /* namespace units */
