@@ -5,7 +5,6 @@
 
 namespace units {
 
-template<typename N, typename U> class unit_number;
 template<typename U, typename N> unit_number<N, U> make_unit_number(const N& n) {
     return unit_number<N, U>{n};
 }
@@ -168,9 +167,9 @@ template<typename U> using ufloat       = unit_number<float, U>;
 template<typename U> using udouble      = unit_number<double, U>;
 template<typename U> using ulong_double = unit_number<long double, U>;
 
-template<typename U> using scalar_float       = ufloat<Scalar>;
-template<typename U> using scalar_double      = udouble<Scalar>;
-template<typename U> using scalar_long_double = ulong_double<Scalar>;
+using scalar_float       = ufloat<Scalar>;
+using scalar_double      = udouble<Scalar>;
+using scalar_long_double = ulong_double<Scalar>;
 
 template<typename U> using ushort      = unit_number<short, U>;
 template<typename U> using uushort     = unit_number<unsigned short, U>;
