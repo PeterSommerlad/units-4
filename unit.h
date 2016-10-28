@@ -7,6 +7,7 @@
 
 namespace units {
 
+template<typename N, typename U> class unit_number;
 template<typename... DimExps> class unit;
 template<typename R, typename U> class unit_multiple;
 
@@ -347,12 +348,17 @@ std::ostream& operator<< (std::ostream& os, const unit_multiple<R, U>&) {
     return os << R::num << "/" << R::den << " " << U{};
 }
 
+#define SETUP_UNIT_TYPES(name, x)                                              \
+    using name##_u = unit_type<decltype(x)>;                                   \
+    template<typename N> using name = unit_number<N, name##_u>;
+
 #define DEFINE_DIMENSION(name, base)                                           \
     auto name##_symbol = COMPILE_STRING(#name);                                \
     auto base##_symbol = COMPILE_STRING(#base);                                \
     using name##_dim = dimension<decltype(name##_symbol), decltype(base##_symbol)>;\
-    using name = unit<unit_detail::dim_exp<name##_dim, 1>>;                    \
-    name base{};
+    using name##_u = unit<unit_detail::dim_exp<name##_dim, 1>>;                \
+    template<typename N> using name = unit_number<N, name##_u>;                \
+    name##_u base{};
 
 using Scalar = unit<>;
 

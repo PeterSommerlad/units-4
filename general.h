@@ -5,7 +5,7 @@
 
 namespace units {
 
-DEFINE_DIMENSION(Time, second);
+DEFINE_DIMENSION(time, second);
 const auto minute = std::ratio<60, 1>{} * second;
 const auto hour   = std::ratio<60, 1>{} * minute;
 const auto day    = std::ratio<24, 1>{} * hour;

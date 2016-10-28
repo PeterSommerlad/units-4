@@ -14,23 +14,23 @@ namespace detail {
 #define UNIT_TYPE(x) unit_type<decltype(x)>
 
 #define SI_SMALLER_PREFIXES(base)                                              \
-    const auto atto##base  = std::atto{} * base;                                     \
-    const auto femto##base = std::femto{} * base;                                    \
-    const auto pico##base  = std::pico{} * base;                                     \
-    const auto nano##base  = std::nano{} * base;                                     \
-    const auto micro##base = std::micro{} * base;                                    \
-    const auto milli##base = std::milli{} * base;                                    \
-    const auto centi##base = std::centi{} * base;                                    \
+    const auto atto##base  = std::atto{} * base;                               \
+    const auto femto##base = std::femto{} * base;                              \
+    const auto pico##base  = std::pico{} * base;                               \
+    const auto nano##base  = std::nano{} * base;                               \
+    const auto micro##base = std::micro{} * base;                              \
+    const auto milli##base = std::milli{} * base;                              \
+    const auto centi##base = std::centi{} * base;                              \
     const auto deci##base  = std::deci{} * base;
 
 #define SI_LARGER_PREFIXES(base)                                               \
-    const auto deca##base  = std::deca{} * base;                                     \
-    const auto hecto##base = std::hecto{} * base;                                    \
-    const auto kilo##base  = std::kilo{} * base;                                     \
-    const auto mega##base  = std::mega{} * base;                                     \
-    const auto giga##base  = std::giga{} * base;                                     \
-    const auto tera##base  = std::tera{} * base;                                     \
-    const auto peta##base  = std::peta{} * base;                                     \
+    const auto deca##base  = std::deca{} * base;                               \
+    const auto hecto##base = std::hecto{} * base;                              \
+    const auto kilo##base  = std::kilo{} * base;                               \
+    const auto mega##base  = std::mega{} * base;                               \
+    const auto giga##base  = std::giga{} * base;                               \
+    const auto tera##base  = std::tera{} * base;                               \
+    const auto peta##base  = std::peta{} * base;                               \
     const auto exa##base   = std::exa{} * base;
 
 #define SI_ALL_PREFIXES(base)                                                  \
@@ -41,12 +41,12 @@ namespace detail {
 
 // Length
 
-DEFINE_DIMENSION(Distance, meter);
+DEFINE_DIMENSION(dist, meter);
 SI_ALL_PREFIXES(meter);
 
 // Mass
 
-DEFINE_DIMENSION(Mass, kilogram);
+DEFINE_DIMENSION(mass, kilogram);
 const auto gram = std::milli{} * kilogram;
 
 const auto femtogram = std::femto{} * gram;
@@ -68,23 +68,23 @@ const auto tonne     = megagram;
 
 // Temperature
 
-DEFINE_DIMENSION(Temperature, kelvin);
+DEFINE_DIMENSION(temperature, kelvin);
 
 // Current
 
-DEFINE_DIMENSION(Current, ampere);
+DEFINE_DIMENSION(current, ampere);
 
 // Luminous intensity
 
-DEFINE_DIMENSION(LuminousIntensity, candela);
+DEFINE_DIMENSION(luminous_intensity, candela);
 
 // Amount of substance
 
-DEFINE_DIMENSION(Substance, mole);
+DEFINE_DIMENSION(substance, mole);
 
 // Angle
 
-DEFINE_DIMENSION(Angle, radian);
+DEFINE_DIMENSION(angle, radian);
 const auto degree =  detail::pi{} * (std::ratio<1, 180>{} * radian);
 
 //////////////////////////////// DERIVED UNITS /////////////////////////////////
@@ -92,12 +92,12 @@ const auto degree =  detail::pi{} * (std::ratio<1, 180>{} * radian);
 // Area
 
 const auto square_meter = meter * meter;
-using Area = UNIT_TYPE(square_meter);
+SETUP_UNIT_TYPES(area, square_meter);
 
 // Volume
 
 const auto cubic_meter = meter * meter * meter;
-using Volume = UNIT_TYPE(cubic_meter);
+SETUP_UNIT_TYPES(volume, cubic_meter);
 const auto liter = std::milli{} * cubic_meter;
 
 const auto femtoliter = std::femto{} * liter;
@@ -113,115 +113,115 @@ SI_LARGER_PREFIXES(liter);
 // Velocity
 
 const auto mps = meter / second;
-using Velocity = UNIT_TYPE(mps);
+SETUP_UNIT_TYPES(velocity, mps);
 
 // Acceleration
 
 const auto mps2 = mps / second;
-using Acceleration = UNIT_TYPE(mps2);
+SETUP_UNIT_TYPES(acceleration, mps2);
 const auto kph = kilometer / hour;
 const auto gravity = 9.80665 * mps2;
 
 // Frequency
 
 const auto hertz = second.exp<-1>();
-using Frequency = UNIT_TYPE(hertz);
+SETUP_UNIT_TYPES(frequency, hertz);
 SI_ALL_PREFIXES(hertz);
 
 // Force
 
 const auto newton = kilogram * meter / (second * second);
-using Force = UNIT_TYPE(newton);
+SETUP_UNIT_TYPES(force, newton);
 SI_ALL_PREFIXES(newton);
 
 // Pressure
 
 const auto pascal = newton / (meter * meter);
-using Pressure = UNIT_TYPE(pascal);
+SETUP_UNIT_TYPES(pressure, pascal);
 SI_ALL_PREFIXES(pascal);
 
 // Energy
 
 const auto joule = newton * meter;
-using Energy = UNIT_TYPE(joule);
+SETUP_UNIT_TYPES(energy, joule);
 SI_ALL_PREFIXES(joule);
 
 // Power
 
 const auto watt = joule / second;
-using Power = UNIT_TYPE(watt);
+SETUP_UNIT_TYPES(power, watt);
 SI_ALL_PREFIXES(watt);
 
 // Electric charge
 
 const auto coloumb = ampere * second;
-using ElectricCharge = UNIT_TYPE(coloumb);
+SETUP_UNIT_TYPES(electric_charge, coloumb);
 SI_ALL_PREFIXES(coloumb);
 
 // Voltage
 
 const auto volt = watt / ampere;
-using Voltage = UNIT_TYPE(volt);
+SETUP_UNIT_TYPES(voltage, volt);
 SI_ALL_PREFIXES(volt);
 
 // Electric capacitance
 
 const auto farad = coloumb / volt;
-using ElectricCapacitance = UNIT_TYPE(farad);
+SETUP_UNIT_TYPES(electric_capacitance, farad);
 SI_ALL_PREFIXES(farad);
 
 // Electric resistance
 
 const auto ohm = volt / ampere;
-using ElectricResistance = UNIT_TYPE(ohm);
+SETUP_UNIT_TYPES(electric_resistance, ohm);
 SI_ALL_PREFIXES(ohm);
 
 // Electrical conductance
 
 const auto siemens = ampere / volt;
-using ElectricalConductance = UNIT_TYPE(siemens);
+SETUP_UNIT_TYPES(electrical_conductance, siemens);
 SI_ALL_PREFIXES(siemens);
 
 // Magnetic flux
 
 const auto weber = volt * second;
-using MagneticFlux = UNIT_TYPE(weber);
+SETUP_UNIT_TYPES(magnetic_flux, weber);
 SI_ALL_PREFIXES(weber);
 
 // Magnetic field strength
 
 const auto tesla = weber / meter.exp<2>();
-using MagneticField = UNIT_TYPE(tesla);
+SETUP_UNIT_TYPES(magnetic_field, tesla);
 SI_ALL_PREFIXES(tesla);
 
 // Inductance
 
 const auto henry = weber / ampere;
-using Inductance = UNIT_TYPE(henry);
+SETUP_UNIT_TYPES(inductance, henry);
 SI_ALL_PREFIXES(henry);
 
 // Radioactivity
 
 const auto becquerel = hertz;
-using Radioactivity = UNIT_TYPE(becquerel);
+SETUP_UNIT_TYPES(radioactivity, becquerel);
 SI_ALL_PREFIXES(becquerel);
 
 // Absorbed dose (of ionizing radiation)
 
 const auto gray = joule / kilogram;
-using AbsorbedDose = UNIT_TYPE(gray);
+SETUP_UNIT_TYPES(absorbed_dose, gray);
 SI_ALL_PREFIXES(gray);
 
 // Equivalent dose (of ionizing radiation) J/kg    m2⋅s−2
 
 const auto sievert = joule / kilogram;
-using EquivalentDos = UNIT_TYPE(sievert);
+SETUP_UNIT_TYPES(equivalent_dose, sievert);
 SI_ALL_PREFIXES(sievert);
 
 // Catalytic activity
 
 const auto katal = mole / second;
-using CatalyticActivity = UNIT_TYPE(katal);
+SETUP_UNIT_TYPES(catalytic_activity, katal);
 SI_ALL_PREFIXES(katal);
 
 } /* namespace metric */
